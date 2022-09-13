@@ -2,11 +2,10 @@ const router = require("express").Router();
 const { Tag, Product, ProductTag } = require("../../models");
 
 // The `/api/tags` endpoint
-///****is this right */
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const tagData = Tag.findAll({
-      include: [{ model: Product }, { model: ProductTag }],
+    const tagData = await Tag.findAll({
+      include: [{ model: Product, through: ProductTag }],
     });
     res.status(200).json(tagData);
   } catch (err) {
@@ -16,10 +15,10 @@ router.get("/", (req, res) => {
   // be sure to include its associated Product data
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const tagData = Tag.findByPk(req.params.id, {
-      include: [{ model: Product }, { model: ProductTag }],
+    const tagData = await Tag.findByPk(req.params.id, {
+      include: [{ model: Product, through: ProductTag }],
     });
     if (!tagData) {
       res.status(404).json({ message: "No tag found with that id" });
@@ -33,9 +32,9 @@ router.get("/:id", (req, res) => {
   // be sure to include its associated Product data
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const tagData = Tag.create({
+    const tagData = await Tag.create({
       tag_name: req.body.tag_name,
     });
     res.status(200).json(tagData);
@@ -45,9 +44,9 @@ router.post("/", (req, res) => {
 });
 // create a new tag
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
-    const tagData = Tag.update(req.body, {
+    const tagData = await Tag.update(req.body, {
       where: {
         id: req.params.id,
       },
@@ -62,9 +61,9 @@ router.put("/:id", (req, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    const tagData = Tag.destroy({
+    const tagData = await Tag.destroy({
       where: {
         id: req.params.id,
       },
